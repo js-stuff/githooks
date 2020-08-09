@@ -2,6 +2,19 @@ import React, { useState, useEffect } from 'react';
 
 export default function App() {
   const [repositories, setRepositories] = useState([]);
+  const [location, setLocation] = useState({});
+
+  useEffect(() => {
+    const watchId = navigator.geolocation.watchPosition(handlePositionReceived);
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
+
+  function handlePositionReceived({ coords }) {
+    const { latitude, longitude } = coords;
+
+    setLocation({ latitude, longitude });
+  }
 
   useEffect(async () => {
     const response = await fetch('https://api.github.com/users/Lucas362/repos');
@@ -25,6 +38,7 @@ export default function App() {
   }
 
   return (
+    <>
     <ul>
       {
         repositories.map(repo => (
@@ -36,5 +50,11 @@ export default function App() {
         ))
       }
     </ul>
+
+    <hr/>
+
+    Latitude: {location.latitude} <br/>
+    Longitude: {location.longitude} <br/>
+    </>
   );
 }
